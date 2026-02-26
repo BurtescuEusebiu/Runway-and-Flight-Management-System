@@ -1,105 +1,103 @@
-# Sistem de Gestionare a Pistelor și Aterizărilor/Decolărilor
+# Runway and Flight Management System
 
-## **Descrierea Sistemului**
-Sistemul gestionează pistele de aterizare/decolare și zborurile asociate acestora printr-o structură eficientă și bine organizată. Pistele (Runways) sunt stocate într-un HashMap utilizând ID-ul pistei ca și cheie. Această abordare asigură o căutare rapidă și eficientă a pistelor după identificator, reducând timpul de acces la constantă amortizată O(1).
+## **System Description**
+The system manages airport runways and associated flights using an efficient and well-structured design. Runways are stored in a `HashMap` using the runway ID as the key. This approach ensures fast and efficient lookup of runways by identifier, achieving amortized constant-time access O(1).
 
-
-## **Descrierea Claselor**
+## **Class Descriptions**
 
 ### **1. Airplane**
-Clasa abstractă `Airplane` reprezintă un avion și conține informațiile de bază ale acestuia. Toate tipurile de avioane (NarrowBody și WideBody) vor extinde această clasă.
-- **Metode cheie**:
-    - `getId()`: Returnează ID-ul avionului.
-    - `getStatus()`: Returnează starea avionului (dacă zborul este activ sau completat).
-    - `getIdealTime()`: Returnează timpul ideal de aterizare/decolare.
-    - `checkEmergency()`: Verifică dacă avionul este în stare de urgență.
-    - `maneuver()`: Făcând o manevră (aterizare/decolare) schimbă starea avionului.
+The abstract class `Airplane` represents a plane and contains its basic information. All airplane types (`NarrowBody` and `WideBody`) extend this class.  
+- **Key Methods**:
+    - `getId()`: Returns the airplane's ID.
+    - `getStatus()`: Returns the airplane's status (active or completed flight).
+    - `getIdealTime()`: Returns the ideal landing/takeoff time.
+    - `checkEmergency()`: Checks if the airplane is in an emergency state.
+    - `maneuver()`: Performs a maneuver (landing/takeoff), changing the airplane's state.
 
 ---
 
 ### **2. NarrowBodyAirplane**
-Subclasă a clasei `Airplane`, aceasta reprezintă avioanele narrow-body. Extinde funcționalitatea clasei abstracte pentru a adăuga specificul avioanelor mai mici.
-- **Metoda cheie**:
-    - `toString()`: Returnează o reprezentare textuală a avionului narrow-body.
+Subclass of `Airplane`, representing narrow-body planes. Extends the abstract class functionality to include smaller airplane specifics.  
+- **Key Method**:
+    - `toString()`: Returns a textual representation of the narrow-body airplane.
 
 ---
 
 ### **3. WideBodyAirplane**
-Subclasă a clasei `Airplane`, aceasta reprezintă avioanele wide-body. Extinde funcționalitatea clasei abstracte pentru a adăuga specificul avioanelor mai mari.
-- **Metoda cheie**:
-    - `toString()`: Returnează o reprezentare textuală a avionului wide-body.
+Subclass of `Airplane`, representing wide-body planes. Extends the abstract class functionality to include larger airplane specifics.  
+- **Key Method**:
+    - `toString()`: Returns a textual representation of the wide-body airplane.
 
 ---
 
 ### **4. Runway**
-Clasa `Runway` reprezintă o pistă de aterizare/decolare și gestionează avioanele care așteaptă să utilizeze pista respectivă. Pistele sunt stocate într-un HashMap pentru căutări eficiente.
-- **Metode cheie**:
-    - `add(Airplane airplane)`: Adaugă un avion pe pista curentă.
-    - `makeManeuver(LocalTime timeStamp, String folderPath)`: Efectuează o manevră pe pista curentă (aterizare/decolare), aruncând excepții în caz de conflicte.
-    - `toString()`: Returnează o reprezentare textuală a pistei.
-    - `toStringWithAvailability(LocalTime timeStamp)`: Returnează informații despre disponibilitatea pistei la un anumit moment.
+The `Runway` class represents a landing/takeoff runway and manages airplanes waiting to use it. Runways are stored in a `HashMap` for efficient lookup.  
+- **Key Methods**:
+    - `add(Airplane airplane)`: Adds an airplane to the runway.
+    - `makeManeuver(LocalTime timeStamp, String folderPath)`: Performs a maneuver (landing/takeoff) on the runway, throwing exceptions in case of conflicts.
+    - `toString()`: Returns a textual representation of the runway.
+    - `toStringWithAvailability(LocalTime timeStamp)`: Returns information about runway availability at a given time.
 
 ---
 
 ### **5. IncorrectRunwayException**
-Excepție aruncată atunci când un avion este alocat unei piste care nu corespunde tipului acesteia.
-- **Metode cheie**:
-    - `logException(String folderPath)`: Loghează detaliile excepției într-un fișier pentru urmărire.
+Exception thrown when an airplane is allocated to a runway that does not match its type.  
+- **Key Method**:
+    - `logException(String folderPath)`: Logs exception details to a file for tracking.
 
 ---
 
 ### **6. UnavailableRunwayException**
-Excepție aruncată atunci când o pistă este ocupată și nu poate accepta alte manevre în timpul solicitat.
-- **Metode cheie**:
-    - `logException(String folderPath)`: Loghează detaliile excepției într-un fișier pentru urmărire.
+Exception thrown when a runway is occupied and cannot accept additional maneuvers at the requested time.  
+- **Key Method**:
+    - `logException(String folderPath)`: Logs exception details to a file for tracking.
 
 ---
 
 ### **7. LandingComparator**
-Compară avioanele pentru prioritizarea aterizărilor. Prioritizează avioanele în funcție de urgențe și de timpul ideal.
-- **Metoda cheie**:
-    - `compare(T plane1, T plane2)`: Comparați avioanele pentru prioritizarea aterizărilor.
+Compares airplanes to prioritize landings, based on emergency status and ideal landing time.  
+- **Key Method**:
+    - `compare(T plane1, T plane2)`: Compares airplanes for landing prioritization.
 
 ---
 
 ### **8. TakeOffComparator**
-Compară avioanele pentru prioritizarea decolărilor. Prioritizează avioanele în funcție de timpul ideal.
-- **Metoda cheie**:
-    - `compare(T plane1, T plane2)`: Comparați avioanele pentru prioritizarea decolărilor.
+Compares airplanes to prioritize takeoffs, based on ideal takeoff time.  
+- **Key Method**:
+    - `compare(T plane1, T plane2)`: Compares airplanes for takeoff prioritization.
 
 ---
 
 ### **9. Commands**
-Clasa `Commands` gestionează toate comenzile primite de la utilizator și controlează procesarea acestora.
-- **Metode cheie**:
-    - `addRunway(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String id, String type, String planeType)`: Adaugă o pistă în lista de piste.
-    - `addPlane(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String id, String start, String end, String model, boolean emergency, LocalTime idealTime, String planeType, String emergencyType)`: Adaugă un avion pe pistă.
-    - `makeManeuver(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String runwayId)`: Efectuează o manevră de aterizare/decolare pentru avionul curent.
-    - `runwayInfo(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String runwayId)`: Generază informații despre pista specifică.
-    - `airplaneInfo(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String airplaneId)`: Generază informații despre avionul specific.
+The `Commands` class handles all user commands and controls their execution.  
+- **Key Methods**:
+    - `addRunway(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String id, String type, String planeType)`: Adds a runway to the list.
+    - `addPlane(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String id, String start, String end, String model, boolean emergency, LocalTime idealTime, String planeType, String emergencyType)`: Adds a plane to a runway.
+    - `makeManeuver(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String runwayId)`: Performs a landing/takeoff maneuver for a plane.
+    - `runwayInfo(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String runwayId)`: Generates information about a specific runway.
+    - `airplaneInfo(String folderPath, HashMap<String, Runway<? extends Airplane>> runways, LocalTime timeStamp, String airplaneId)`: Generates information about a specific airplane.
 
 ---
 
-## **Structuri de Date – Documentație Tehnică**
+## **Data Structures – Technical Documentation**
 
-### **Arhitectura și Organizarea Datelor**
-Sistemul gestionează pistele de aterizare/decolare și zborurile asociate acestora printr-o structură eficientă și bine organizată.
+### **Architecture and Data Organization**
+The system manages runways and associated flights through an efficient and well-structured architecture.
 
-- **Pistele (Runways)** sunt stocate într-un HashMap utilizând ID-ul pistei ca și cheie. Această abordare asigură o căutare rapidă și eficientă a pistelor după identificator, reducând timpul de acces la constantă amortizată O(1).
+- **Runways** are stored in a `HashMap` using the runway ID as the key, providing fast, amortized O(1) lookup.
+- At each runway, flights are managed using a `PriorityQueue` with two comparators:
+    - **TakeOffComparator** – prioritizes takeoffs.
+    - **LandingComparator** – prioritizes landings.  
+  Comparators ensure airplanes are ordered by urgency and ideal times, allowing critical flights to be handled before less urgent ones.
 
-- La nivelul fiecărei piste, zborurile sunt gestionate printr-o `PriorityQueue`. Aceasta este creată utilizând două comparatoare:
-    - **TakeOffComparator** – Prioritizează decolările.
-    - **LandingComparator** – Prioritizează aterizările.
-      Comparatoarele asigură ordonarea avioanelor în funcție de urgențe și de timpul ideal de aterizare/decolare, facilitând astfel procesarea avioanelor critice înaintea celor mai puțin urgente.
+### **Generic Runway Management**
+Runways are implemented using generics, allowing efficient handling of both `WideBodyAirplane` and `NarrowBodyAirplane`. This approach improves code flexibility and reuse, supporting multiple airplane types without duplicating logic.
 
-### **Gestionarea Generică a Pistei**
-Implementarea pistelor este realizată utilizând genericitate, permițând astfel gestionarea eficientă atât a avioanelor de tip `WideBodyAirplane`, cât și a celor de tip `NarrowBodyAirplane`. Această abordare îmbunătățește flexibilitatea și reutilizarea codului, oferind suport pentru diferite tipuri de aeronave fără a duce la duplicarea logicii.
+### **Limitations and Optimizations**
+While the runway management system is optimized, searching for a specific flight across all runways is not ideal. Currently, locating a flight requires iterating through each runway and checking each airplane.
 
-### **Limitări și Optimizări**
-Deși sistemul de gestionare a pistelor este optimizat, căutarea unui zbor specific în cadrul tuturor pistelor nu este ideală. În prezent, pentru a localiza un zbor, aplicația iterează prin fiecare pistă și verifică fiecare avion.
+#### Possible Improvement:
+A supplementary `HashMap` in **Main** could directly associate flight IDs with their corresponding flights, reducing search time from O(n) (iterating all runways and flights) to O(1).
 
-#### Posibilă Îmbunătățire:
-Căutarea zborurilor ar putea fi optimizată prin introducerea unui HashMap suplimentar în **Main**, care să asocieze direct ID-ul zborului cu zborul corespunzător. Această modificare ar reduce timpul de căutare de la O(n) (iterarea prin toate pistele și zborurile) la O(1).
-
-#### Decizia de Implementare:
-Totuși, această optimizare nu a fost aplicată, deoarece cerințele proiectului specifică limitarea atributelor gestionate la nivelul clasei `Main`.
+#### Implementation Decision:
+This optimization was not applied because the project requirements limit the attributes managed to the `Main` class level.
